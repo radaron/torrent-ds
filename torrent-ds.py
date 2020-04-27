@@ -1,18 +1,78 @@
 import os
+import sys
+import logging
+import time
+import inspect
+from datetime import datetime, timedelta
+from configparser import ConfigParser
 
+import torrentds.error
+from torrentds.error import MissingConfigError
+from torrentds.data import global_init
 from torrentds.logger import init_logger
-from torrentds.creds import Credentials
-from torrentds.config import Config
+from torrentds.creds import Credential
+from torrentds.download import DownloadManager
 
+
+def check_time(start, **kwargs):
+    now = datetime.now()
+    if now - start >= timedelta(**kwargs):
+        return True
+    else:
+        return False
+
+def check_between_time(before, after):
+    before = datetime.strptime(before, "%H:%M:%S")
+    after = datetime.strptime(after, "%H:%M:%S")
+    now = datetime.now()
+    return before < now < after
 
 def main(conf_path):
-    config = Config(conf_path)
+    # Load configuration
+    config = ConfigParser()
+    config.read(conf_path)
 
+    # Initialize logger
+    init_logger("root", config["resources"]["log_path"])
+    logger = logging.getLogger("root")
 
-    
+    try:
+        # Init database
+        global_init(config["resources"]["data_path"])
+        start_time = datetime.now()
+        while True:
+
+            if check_time(start_time, seconds=int(config["download"]["retry_interval"])):
+                DownloadManager(config).clean_db()
+                DownloadManager(config).download_rss()
+                start_time = datetime.utcnow()
+            if check_time(start_time, days=int(config["recommended"]["retry_interval"])):
+                DownloadManager(config).download_recommended()
+                start_time = time.time()
+            
+            sleep_time = config["transmission"]["sleep_time"]
+            if sleep_time and check_between_time(sleep_time.split('-')[0],
+                                                 sleep_time.split('-')[1]):
+                DownloadManager(config).stop_all()
+            else:
+                DownloadManager(config).start_all()
+
+            time.sleep(1)
+
+    except KeyboardInterrupt:
+        logger.info("Exiting application.")
+        sys.exit(0)
+
+    except Exception as e:
+        for _, obj in inspect.getmembers(torrentds.error):
+            if inspect.isclass(obj) and isinstance(e, obj):
+                sys.exit(1)
+        logger.exception(f"Unhandled exception: {e}")
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     config_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "config.ini")
     if not os.path.exists(config_path):
-        raise Exception(f"Config file is not exist {config_path}")
+        raise MissingConfigError(f"Config file is not exist: '{config_path}'")
     main(config_path)

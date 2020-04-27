@@ -1,3 +1,5 @@
 *.key
 *.sqlite
+*.log*
 __pycache__/
+test_config/
