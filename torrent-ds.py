@@ -12,21 +12,7 @@ from torrentds.data import global_init
 from torrentds.logger import init_logger
 from torrentds.creds import Credential
 from torrentds.download import DownloadManager
-
-
-def check_time(start, **kwargs):
-    now = datetime.now()
-    if now - start >= timedelta(**kwargs):
-        return True
-    else:
-        return False
-
-def check_between_time(before, after):
-    #TODO Fix this function
-    before = datetime.strptime(before, "%H:%M:%S")
-    after = datetime.strptime(after, "%H:%M:%S")
-    now = datetime.now()
-    return before < now < after
+from torrentds.util import check_time, check_between_time
 
 def main(conf_path):
     # Load configuration

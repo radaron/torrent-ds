@@ -176,7 +176,6 @@ class DownloadManager:
             for torrent in torrents:
                 if torrent["id"] not in ids:
                     self._add_torrent(torrent, tracker_client, transmission_client, rss)
-            #TODO clean bookmarks
             tracker_client.close()
             db_session.close()
 
