@@ -22,6 +22,7 @@ def check_time(start, **kwargs):
         return False
 
 def check_between_time(before, after):
+    #TODO Fix this function
     before = datetime.strptime(before, "%H:%M:%S")
     after = datetime.strptime(after, "%H:%M:%S")
     now = datetime.now()
