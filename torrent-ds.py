@@ -8,7 +8,7 @@ from configparser import ConfigParser
 
 import torrentds.error
 from torrentds.error import MissingConfigError
-from torrentds.data import global_init
+from torrentds.data import global_init as db_init
 from torrentds.logger import init_logger
 from torrentds.creds import Credential
 from torrentds.download import DownloadManager
@@ -20,24 +20,33 @@ def main(conf_path):
     config.read(conf_path)
 
     # Initialize logger
-    init_logger("root", config["resources"]["log_path"])
+    log_path = os.path.join(os.path.abspath("/var/log/"), "torrent-ds.log")
+    init_logger("root", log_path)
     logger = logging.getLogger("root")
 
     try:
         # Init database
-        global_init(config["resources"]["data_path"])
-        start_time = datetime.now()
-        while True:
+        db_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "database.sqlite")
+        db_init(db_path)
 
+        if config["recommended"].get("enable") != "True":
+            logger.info("Recommended function is disabled. Check config: '{}'.".format(conf_path))
+        
+        start_time = datetime.now()
+        start_time_recommended = datetime.now()
+        while True:
+            
             if check_time(start_time, seconds=int(config["download"]["retry_interval"])):
                 DownloadManager(config).clean_db()
                 DownloadManager(config).download_rss()
-                start_time = datetime.utcnow()
-            if check_time(start_time, days=int(config["recommended"]["retry_interval"])):
-                DownloadManager(config).download_recommended()
-                start_time = time.time()
+                start_time = datetime.now()
             
-            sleep_time = config["transmission"]["sleep_time"]
+            if config["recommended"].get("enable") == "True":
+                if check_time(start_time_recommended, days=int(config["recommended"]["retry_interval"])):
+                    DownloadManager(config).download_recommended()
+                    start_time_recommended = datetime.now()
+            
+            sleep_time = config["transmission"].get("sleep_time")
             if sleep_time and check_between_time(sleep_time.split('-')[0],
                                                  sleep_time.split('-')[1]):
                 DownloadManager(config).stop_all()
@@ -54,12 +63,12 @@ def main(conf_path):
         for _, obj in inspect.getmembers(torrentds.error):
             if inspect.isclass(obj) and isinstance(e, obj):
                 sys.exit(1)
-        logger.exception(f"Unhandled exception: {e}")
+        logger.exception("Unhandled exception: {}".format(e))
         sys.exit(1)
 
 
 if __name__ == "__main__":
     config_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "config.ini")
     if not os.path.exists(config_path):
-        raise MissingConfigError(f"Config file is not exist: '{config_path}'")
+        raise MissingConfigError("Config file is not exist: '{}'".format(config_path))
     main(config_path)

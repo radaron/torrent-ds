@@ -37,7 +37,6 @@ def create_session():
 class Torrent(SqlAlchemyBase):
     __tablename__ = "torrents"
     
-    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    tracker_id = sa.Column(sa.Integer, nullable=False)
+    tracker_id = sa.Column(sa.Integer, primary_key=True, nullable=False)
     transmission_id = sa.Column(sa.Integer, nullable=False)
     date = sa.Column(sa.DateTime, default=datetime.datetime.utcnow)

@@ -2,7 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 def init_logger(name, log_path):
-    log_formatter = logging.Formatter('%(asctime)s %(levelname)s %(module)s:%(lineno)d %(message)s')
+    log_formatter = logging.Formatter('%(asctime)s %(levelname)s %(module)s %(message)s')
 
     my_handler = RotatingFileHandler(log_path, mode='a', maxBytes=5*1024*1024, 
                                      backupCount=4, encoding=None, delay=0)

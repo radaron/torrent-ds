@@ -23,8 +23,9 @@ class Credential:
 
     def _check_key(self):
         if not self._key_exists and self._is_encrypted:
-            self._logger.error(f"The key file: '{self._key_path}' does not exists, to decrypt password.")
-            raise EncryptException(f"The key file: '{self._key_path}' does not exists, to decrypt password.")
+            msg = "The key file: '{}' does not exists, to decrypt password.".format(self._key_path)
+            self._logger.error(msg)
+            raise EncryptException(msg)
 
         if not self._key_exists:
             self._create_key()
@@ -62,8 +63,9 @@ class Credential:
             if len(self._config[self._name]["password"]) > 0:
                 return True
             else:
-                self._logger.error(f"Missing password or raw password field in credential: '{self._credential_path}' for '{self._name}'.")
-                raise EncryptException(f"Missing password or raw password field in credential: '{self._credential_path}' for '{self._name}'.")
+                msg = "Missing password or raw password field in credential: '{}' for '{}'.".format(self._credential_path, self._name)
+                self._logger.error(msg)
+                raise EncryptException(msg)
             
     @property
     def _key_exists(self):

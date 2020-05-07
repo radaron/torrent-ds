@@ -62,13 +62,13 @@ class DownloadManager:
     def __init__(self, config):
         self._config = config
         self._logger = logging.getLogger("root")
+        self._credentials_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "credentials.ini")
+        self._key_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "key.key")
    
     def _get_transmission_client(self):
         ip = self._config["transmission"]["ip_address"]
         port = self._config["transmission"]["port"]
-        cred = Credential("transmission",
-                          self._config["resources"]["credential_path"],
-                          self._config["resources"]["key_path"])
+        cred = Credential("transmission", self._credentials_path, self._key_path)
         try:
             client = TransmissionClient(
                 address=ip,
@@ -77,30 +77,28 @@ class DownloadManager:
                 password=cred.password)
 
         except Exception as e:
-            self._logger.exception(f"Error while connecting to tranmission-rpc. {e}")
+            self._logger.exception("Error while connecting to tranmission-rpc. {}".format(e))
             return None
         return client
 
     def _get_tracker_client(self, credential_title):
-        cred = Credential(credential_title,
-                          self._config["resources"]["credential_path"],
-                          self._config["resources"]["key_path"])
+        cred = Credential(credential_title, self._credentials_path, self._key_path)
         try:
             client = NcoreClient()
             client.open(cred.username, cred.password)
 
         except NcoreCredentialError:
-            self._logger.exception(f"Bad credential for label: '{cred.label}'.")
+            self._logger.exception("Bad credential for label: '{}'.".format(cred.label))
             return None
         except NcoreConnectionError:
-            self._logger.exception(f"Connection error with tracker.")
+            self._logger.exception("Connection error with tracker.")
             return None
         return client
 
-    def _get_download_path(self, torrent_type, label):
+    def _get_download_path(self, torrent, label):
         for path in download_categories:
             for t_type in download_categories[path]:
-                if torrent_type == t_type:
+                if torrent["type"] == t_type:
                     full_path = self._config[label][path]
                     return full_path if full_path else None
 
@@ -111,32 +109,34 @@ class DownloadManager:
         try:
             file_path = tracker_client.download(torrent, tmp_dir)
         except NcoreConnectionError:
-            self._logger.warning(f"Unable to connect to tracker.")
+            self._logger.warning("Unable to connect to tracker.")
             return None
         except NcoreDownloadError as e:
             self._logger.warning(e.args[0])
             return None
         
-        d_path = self._get_download_path(torrent["type"], label)
+        d_path = self._get_download_path(torrent, label)
         if d_path:
             args = {
                 "download_dir": os.path.abspath(d_path)
             }
         else:
+            d_path = "default download dir."
             args = {}
-
         new_torrent = tranmission_client.add_torrent(file_path, **args)
-
+        
         db_session = create_session()
-        torrent_db = Torrent()
-        torrent_db.tracker_id = torrent["id"]
-        torrent_db.transmission_id = new_torrent.id
-        db_session.add(torrent_db)
-        db_session.commit()
+        if db_session.query(Torrent).filter_by(tracker_id=torrent["id"]).count() == 0:
+            torrent_db = Torrent()
+            torrent_db.tracker_id = torrent["id"]
+            torrent_db.transmission_id = new_torrent.id
+            db_session.add(torrent_db)
+            db_session.commit()
+            self._logger.info("Download torrent: '{}' to '{}'.".format(torrent['title'], d_path))
         db_session.close()
         
     def clean_db(self):
-        self._logger.info("Cleaning database.")
+        self._logger.info("Cleaning database...")
         
         client = self._get_transmission_client()
         if client is None:
@@ -151,7 +151,7 @@ class DownloadManager:
                 db_session.delete(item)
                 deleted_cnt += 1
         db_session.commit()
-        self._logger.info(f"Deleted {deleted_cnt} items from db.")
+        self._logger.info("Deleted {} items from db.".format(deleted_cnt))
 
         db_session.close()
     
@@ -160,7 +160,7 @@ class DownloadManager:
         for rss in rss_list:
             url = self._config[rss]["url"]
             credential = self._config[rss]["credential"]
-            self._logger.info(f"Get torrents from rss: '{url}', label: '{rss}'.")
+            self._logger.info("Get torrents from rss: '{}', label: '{}'.".format(url, rss))
             
             tracker_client = self._get_tracker_client(credential)
             if tracker_client is None:
@@ -180,7 +180,27 @@ class DownloadManager:
             db_session.close()
 
     def download_recommended(self):
-        pass
+        tracker_client = self._get_tracker_client(self._config["recommended"]["credential"])
+        if tracker_client is None:
+            return
+        transmission_client = self._get_transmission_client()
+        if transmission_client is None:
+            return
+        self._logger.info("Downloading recommended...")
+        categories = self._config["recommended"]["categories"].split(";")
+        for category in categories:
+            types = download_categories.get(category)
+            if types is None:
+                self._logger.warning("Unknown category: '{}'.".format(category))
+                return
+            for type in types:
+                torrents = tracker_client.get_recommended(type)
+                for torrent in torrents:
+                    download_path = self._config["recommended"].get(category)
+                    if download_path is None:
+                        self._logger.warning("Download path is not defined for category: '{}' in recommended.".format(category))
+                        return
+                    self._add_torrent(torrent, tracker_client, transmission_client, "recommended")
     
     def start_all(self):
         client = self._get_transmission_client()
