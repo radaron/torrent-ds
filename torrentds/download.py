@@ -1,12 +1,13 @@
 import os
 import logging
 import tempfile
-from ncoreparser.client import Client as NcoreClient
-from ncoreparser.data import SearchParamType
-from ncoreparser.error import (
-    NcoreCredentialError, 
+from ncoreparser import Client as NcoreClient
+from ncoreparser import (
+    SearchParamType,
+    NcoreCredentialError,
     NcoreConnectionError,
-    NcoreDownloadError
+    NcoreDownloadError,
+    Size
 )
 from transmissionrpc.client import Client as TransmissionClient
 
@@ -64,10 +65,14 @@ class DownloadManager:
         self._logger = logging.getLogger("root")
         self._credentials_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "credentials.ini")
         self._key_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "key.key")
-   
+
     def _get_transmission_client(self):
-        ip = self._config["transmission"]["ip_address"]
-        port = self._config["transmission"]["port"]
+        try:
+            ip = self._config["transmission"]["ip_address"]
+            port = self._config["transmission"]["port"]
+        except KeyError:
+            self._logger.exception("Missing config for transmission. Skipping...")
+            return
         cred = Credential("transmission", self._credentials_path, self._key_path)
         try:
             client = TransmissionClient(
@@ -99,7 +104,7 @@ class DownloadManager:
         for path in download_categories:
             for t_type in download_categories[path]:
                 if torrent["type"] == t_type:
-                    full_path = self._config[label][path]
+                    full_path = self._config[label].get(path)
                     return full_path if full_path else None
 
     def _add_torrent(self, torrent, tracker_client, tranmission_client, label):
@@ -114,7 +119,7 @@ class DownloadManager:
         except NcoreDownloadError as e:
             self._logger.warning(e.args[0])
             return None
-        
+
         d_path = self._get_download_path(torrent, label)
         if d_path:
             args = {
@@ -123,10 +128,10 @@ class DownloadManager:
         else:
             d_path = "default download dir."
             args = {}
-        new_torrent = tranmission_client.add_torrent(file_path, **args)
-        
+
         db_session = create_session()
         if db_session.query(Torrent).filter_by(tracker_id=torrent["id"]).count() == 0:
+            new_torrent = tranmission_client.add_torrent(file_path, **args)
             torrent_db = Torrent()
             torrent_db.tracker_id = torrent["id"]
             torrent_db.transmission_id = new_torrent.id
@@ -134,10 +139,10 @@ class DownloadManager:
             db_session.commit()
             self._logger.info("Download torrent: '{}' to '{}'.".format(torrent['title'], d_path))
         db_session.close()
-        
+
     def clean_db(self):
         self._logger.info("Cleaning database...")
-        
+
         client = self._get_transmission_client()
         if client is None:
             return
@@ -154,30 +159,25 @@ class DownloadManager:
         self._logger.info("Deleted {} items from db.".format(deleted_cnt))
 
         db_session.close()
-    
+
     def download_rss(self):
+        transmission_client = self._get_transmission_client()
+        if transmission_client is None:
+            return
         rss_list = [rss for rss in self._config.sections() if rss.startswith("rss")]
         for rss in rss_list:
             url = self._config[rss]["url"]
             credential = self._config[rss]["credential"]
             self._logger.info("Get torrents from rss: '{}', label: '{}'.".format(url, rss))
-            
+
             tracker_client = self._get_tracker_client(credential)
             if tracker_client is None:
                 return
 
-            transmission_client = self._get_transmission_client()
-            if transmission_client is None:
-                return
-            
-            db_session = create_session()
-            ids = db_session.query(Torrent.transmission_id).all()
             torrents = tracker_client.get_by_rss(url)
             for torrent in torrents:
-                if torrent["id"] not in ids:
-                    self._add_torrent(torrent, tracker_client, transmission_client, rss)
+                self._add_torrent(torrent, tracker_client, transmission_client, rss)
             tracker_client.close()
-            db_session.close()
 
     def download_recommended(self):
         tracker_client = self._get_tracker_client(self._config["recommended"]["credential"])
@@ -186,6 +186,7 @@ class DownloadManager:
         transmission_client = self._get_transmission_client()
         if transmission_client is None:
             return
+        size_cfg = self._config["recommended"].get("max_size")
         self._logger.info("Downloading recommended...")
         categories = self._config["recommended"]["categories"].split(";")
         for category in categories:
@@ -196,12 +197,12 @@ class DownloadManager:
             for type in types:
                 torrents = tracker_client.get_recommended(type)
                 for torrent in torrents:
-                    download_path = self._config["recommended"].get(category)
-                    if download_path is None:
-                        self._logger.warning("Download path is not defined for category: '{}' in recommended.".format(category))
-                        return
+                    if size_cfg and torrent['size'] > Size(size_cfg):
+                        self._logger.info("Skipping torrent '{}', it is too large: '{}'.".format(torrent['title'],
+                                                                                                 torrent['size']))
+                        continue
                     self._add_torrent(torrent, tracker_client, transmission_client, "recommended")
-    
+
     def start_all(self):
         client = self._get_transmission_client()
         if client is None:
@@ -209,7 +210,7 @@ class DownloadManager:
         if len(client.get_torrents()) == 0:
             return
         client.start_all()
-    
+
     def stop_all(self):
         client = self._get_transmission_client()
         if client is None:

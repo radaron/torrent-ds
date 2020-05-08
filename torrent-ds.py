@@ -31,27 +31,29 @@ def main(conf_path):
 
         if config["recommended"].get("enable") != "True":
             logger.info("Recommended function is disabled. Check config: '{}'.".format(conf_path))
-        
+
         start_time = datetime.now()
         start_time_recommended = datetime.now()
         while True:
-            
+
             if check_time(start_time, seconds=int(config["download"]["retry_interval"])):
                 DownloadManager(config).clean_db()
                 DownloadManager(config).download_rss()
                 start_time = datetime.now()
-            
+
             if config["recommended"].get("enable") == "True":
-                if check_time(start_time_recommended, days=int(config["recommended"]["retry_interval"])):
+                if check_time(start_time_recommended, seconds=int(config["recommended"]["retry_interval"])):
                     DownloadManager(config).download_recommended()
                     start_time_recommended = datetime.now()
-            
+
+            # TODO remember last change
             sleep_time = config["transmission"].get("sleep_time")
-            if sleep_time and check_between_time(sleep_time.split('-')[0],
-                                                 sleep_time.split('-')[1]):
-                DownloadManager(config).stop_all()
-            else:
-                DownloadManager(config).start_all()
+            if sleep_time:
+                if check_between_time(sleep_time.split('-')[0],
+                                      sleep_time.split('-')[1]):
+                    DownloadManager(config).stop_all()
+                else:
+                    DownloadManager(config).start_all()
 
             time.sleep(1)
 

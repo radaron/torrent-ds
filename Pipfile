@@ -9,7 +9,7 @@ pytest = "*"
 [packages]
 cryptography = "==2.9.2"
 sqlalchemy = "==1.3.16"
-ncoreparser = "==0.0.6"
+ncoreparser = "==0.0.8"
 transmissionrpc-ng = "==0.12.0"
 
 [requires]
