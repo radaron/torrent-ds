@@ -34,6 +34,8 @@ def main(conf_path):
 
         start_time = datetime.now()
         start_time_recommended = datetime.now()
+        # state of torrents in transmission
+        started = True
         while True:
 
             if check_time(start_time, seconds=int(config["download"]["retry_interval"])):
@@ -42,18 +44,21 @@ def main(conf_path):
                 start_time = datetime.now()
 
             if config["recommended"].get("enable") == "True":
-                if check_time(start_time_recommended, seconds=int(config["recommended"]["retry_interval"])):
+                if check_time(start_time_recommended, days=int(config["recommended"]["retry_interval"])):
                     DownloadManager(config).download_recommended()
                     start_time_recommended = datetime.now()
 
-            # TODO remember last change
             sleep_time = config["transmission"].get("sleep_time")
             if sleep_time:
                 if check_between_time(sleep_time.split('-')[0],
                                       sleep_time.split('-')[1]):
-                    DownloadManager(config).stop_all()
+                    if started:
+                        DownloadManager(config).stop_all()
+                        started = False
                 else:
-                    DownloadManager(config).start_all()
+                    if not started:
+                        DownloadManager(config).start_all()
+                        started = True
 
             time.sleep(1)
 

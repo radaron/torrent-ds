@@ -67,20 +67,20 @@ class DownloadManager:
         self._key_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "key.key")
 
     def _get_transmission_client(self):
-        try:
-            ip = self._config["transmission"]["ip_address"]
-            port = self._config["transmission"]["port"]
-        except KeyError:
-            self._logger.exception("Missing config for transmission. Skipping...")
-            return
-        cred = Credential("transmission", self._credentials_path, self._key_path)
-        try:
-            client = TransmissionClient(
-                address=ip,
-                port=port,
-                user=cred.username,
-                password=cred.password)
+        params = {}
+        address = self._config["transmission"].get("ip_address")
+        if address:
+            params["address"] = address
+        port = self._config["transmission"].get("port")
+        if port:
+            params["port"] = port
+        if self._config["transmission"].get("authenticate") == "True":
+            cred = Credential("transmission", self._credentials_path, self._key_path)
+            params["username"] = cred.username
+            params["password"] = cred.password
 
+        try:
+            client = TransmissionClient(**params)
         except Exception as e:
             self._logger.exception("Error while connecting to tranmission-rpc. {}".format(e))
             return None
@@ -209,6 +209,7 @@ class DownloadManager:
             return
         if len(client.get_torrents()) == 0:
             return
+        self._logger.info("Starting all torrents.")
         client.start_all()
 
     def stop_all(self):
@@ -216,4 +217,6 @@ class DownloadManager:
         if client is None:
             return
         ids = [torrent.id for torrent in client.get_torrents()]
-        client.stop_torrent(ids)
+        self._logger.info("Stopping all torrents.")
+        if len(ids) > 0:
+            client.stop_torrent(ids)
