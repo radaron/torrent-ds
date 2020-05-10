@@ -18,9 +18,10 @@ Funkciók:
   ```
     
 2. Konfiguráció
+
   [konfiguráció](#Konfiguráció)
                                                           
-2. Telepíteni:
+3. Telepíteni:
   ```
   sudo ./install.sh
   ```
