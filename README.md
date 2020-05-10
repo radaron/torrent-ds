@@ -5,7 +5,7 @@ Torrentszerver applikáció az Ncore-hoz. Képes kezelni az rss feed-eket illetv
 Öszekapcsolható a Transmisison-al, ami le tudja tölteni a torrent fájljait.
                                                                                  
 Funkciók:                                                                        
-* Periódikusan megnyitni a torrenteket az rss feed linkeket használva, és a meghatározott kategóriákat képes külön könyvtárakba letölteni.
+* Periódikusan megnyitja a torrenteket az rss feed linkeket használva, és a meghatározott kategóriákat képes külön könyvtárakba letölteni.
 * A konfigurációban meghatározott intervallum alatt leállítja az összes torrentet (pl.: napközben munka mellett) (opcionális)
 * Meghatározott időnként letölteni a staff által ajánlottnak jelölt torrenteket, kategóriánként beállított könyvtárakba (opcionális)
    
