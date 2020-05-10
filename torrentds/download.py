@@ -77,7 +77,7 @@ class DownloadManager:
             params["port"] = port
         if self._config["transmission"].get("authenticate") == "True":
             cred = Credential("transmission", self._credentials_path, self._key_path)
-            params["username"] = cred.username
+            params["user"] = cred.username
             params["password"] = cred.password
 
         try:
