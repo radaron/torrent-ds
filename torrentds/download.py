@@ -1,4 +1,5 @@
 import os
+import shutil
 import logging
 import tempfile
 from ncoreparser import Client as NcoreClient
@@ -111,6 +112,7 @@ class DownloadManager:
         if tracker_client is None:
             return
         tmp_dir = tempfile.mkdtemp()
+        os.chmod(tmp_dir, 0o777)
         try:
             file_path = tracker_client.download(torrent, tmp_dir)
         except NcoreConnectionError:
@@ -128,7 +130,6 @@ class DownloadManager:
         else:
             d_path = "default download dir."
             args = {}
-
         db_session = create_session()
         if db_session.query(Torrent).filter_by(tracker_id=torrent["id"]).count() == 0:
             new_torrent = tranmission_client.add_torrent(file_path, **args)
@@ -139,6 +140,7 @@ class DownloadManager:
             db_session.commit()
             self._logger.info("Download torrent: '{}' to '{}'.".format(torrent['title'], d_path))
         db_session.close()
+        shutil.rmtree(tmp_dir)
 
     def clean_db(self):
         self._logger.info("Cleaning database...")
