@@ -25,9 +25,12 @@ Conflicts=getty@tty1.service
 
 [Service]
 Type=simple
+Environment="LC_ALL=C.UTF-8"
+Environment="LANG=C.UTF-8"
 ExecStart=/usr/local/bin/pipenv run python torrent-ds.py
 WorkingDirectory=$SCRIPTPATH
-StandardInput=tty-force
+StandardOutput=syslog
+StandardError=syslog
 
 [Install]
 WantedBy=multi-user.target" > /etc/systemd/system/torrent-ds.service
