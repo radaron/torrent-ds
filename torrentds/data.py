@@ -41,4 +41,4 @@ class Torrent(SqlAlchemyBase):
     transmission_id = sa.Column(sa.Integer, nullable=False)
     title = sa.Column(sa.String)
     label = sa.Column(sa.String)
-    date = sa.Column(sa.DateTime, default=datetime.datetime.utcnow)
+    date = sa.Column(sa.DateTime, default=datetime.datetime.now)

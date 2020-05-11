@@ -68,8 +68,8 @@ categories =          | Opcionális
 max_size = 3 GB       | Kötelező
                       | Maximum limit. Az ennél nagyobb méretű torrenteket nem tölti le
                       | ajánlott módban
-retry_interval = 1    | Kötelező
-                      | Az ajánlott torrentek letöltésének gyakorisága (nap-ban)
+retry_interval = 5    | Kötelező
+                      | Az ajánlott torrentek letöltésének gyakorisága (órában)
 movies =              | A filmeket az itt megadott mappába tölti le pl: /home/osmc/Downloads/movies
 series =              | A sorozatokat az itt megadott mappába tölti le pl: /home/osmc/Downloads/series
 musics =              | A zenéket az itt megadott mappába tölti le pl: /home/osmc/Downloads/musics

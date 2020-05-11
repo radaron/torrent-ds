@@ -13,8 +13,8 @@ enable = False
 credential = cred1
 categories = movies;series;musics;games;programs;books;xxx
 max_size = 3 GB
-# day
-retry_interval = 1
+# hour
+retry_interval = 5
 movies =
 series =
 musics =
