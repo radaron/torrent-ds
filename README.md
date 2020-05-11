@@ -119,3 +119,21 @@ user_name =
 raw_password =
 password =
 ```
+## Használat
+### torrent-ds service indítása
+```
+sudo systemctl start torrent-ds
+```
+### torrent-ds service megállítása
+```
+sudo systemctl stop torrent-ds
+```
+### logok megtekintése
+```
+less +F /var/log/torrent-ds.log
+```
+
+### Bármilyen konfiguráció módosítása után újraindítás szükséges
+```
+sudo systemctl restart torrent-ds
+```
