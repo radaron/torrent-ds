@@ -14,7 +14,7 @@ def global_init(db_file: str):
 
     if __factory:
         return
-    
+
     logger = logging.getLogger("root")
 
     if not db_file or not db_file.strip():
@@ -36,7 +36,9 @@ def create_session():
 
 class Torrent(SqlAlchemyBase):
     __tablename__ = "torrents"
-    
+
     tracker_id = sa.Column(sa.Integer, primary_key=True, nullable=False)
     transmission_id = sa.Column(sa.Integer, nullable=False)
+    title = sa.Column(sa.String)
+    label = sa.Column(sa.String)
     date = sa.Column(sa.DateTime, default=datetime.datetime.utcnow)

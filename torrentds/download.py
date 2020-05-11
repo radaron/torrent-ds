@@ -136,6 +136,8 @@ class DownloadManager:
             torrent_db = Torrent()
             torrent_db.tracker_id = torrent["id"]
             torrent_db.transmission_id = new_torrent.id
+            torrent_db.title = torrent["title"]
+            torrent_db.label = label
             db_session.add(torrent_db)
             db_session.commit()
             self._logger.info("Download torrent: '{}' to '{}'.".format(torrent['title'], d_path))
