@@ -27,8 +27,8 @@ torrents = session.query(Torrent).order_by(Torrent.date.desc()).all()
 
 
 if args.format == "table":
-    row = "|{:^50}|{:^60}|{:^50}|{:^15}|{:^15}|"
-    separate = "{}".format('-'*196)
+    row = "|{:^50}|{:^70}|{:^50}|{:^15}|{:^15}|"
+    separate = "{}".format('-'*206)
 
     print(separate)
     print(row.format("Label", "Title", "Date", "Tracker id", "Client id"))

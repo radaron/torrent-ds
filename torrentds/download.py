@@ -90,7 +90,7 @@ class DownloadManager:
     def _get_tracker_client(self, credential_title):
         cred = Credential(credential_title, self._credentials_path, self._key_path)
         try:
-            client = NcoreClient()
+            client = NcoreClient(timeout=2)
             client.open(cred.username, cred.password)
 
         except NcoreCredentialError:
@@ -116,7 +116,8 @@ class DownloadManager:
         try:
             file_path = tracker_client.download(torrent, tmp_dir)
         except NcoreConnectionError:
-            self._logger.warning("Unable to connect to tracker.")
+            self._logger.warning("Unable to connect to tracker while"
+                                 " downloading '{}'.".format(torrent['title']))
             return None
         except NcoreDownloadError as e:
             self._logger.warning(e.args[0])
@@ -178,7 +179,12 @@ class DownloadManager:
             if tracker_client is None:
                 return
 
-            torrents = tracker_client.get_by_rss(url)
+            try:
+                torrents = tracker_client.get_by_rss(url)
+            except NcoreConnectionError:
+                self._logger.warning("Unable to connect to tracker, "
+                                     "while get rss.")
+
             for torrent in torrents:
                 self._add_torrent(torrent, tracker_client, transmission_client, rss)
             tracker_client.close()
@@ -199,7 +205,11 @@ class DownloadManager:
                 self._logger.warning("Unknown category: '{}'.".format(category))
                 return
             for type in types:
-                torrents = tracker_client.get_recommended(type)
+                try:
+                    torrents = tracker_client.get_recommended(type)
+                except NcoreConnectionError:
+                    self._logger.warning("Unable to connect to tracker,"
+                                         " while getting recommended.")
                 for torrent in torrents:
                     if size_cfg and torrent['size'] > Size(size_cfg):
                         self._logger.info("Skipping torrent '{}', it is too large: '{}'.".format(torrent['title'],
