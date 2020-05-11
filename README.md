@@ -29,6 +29,10 @@ Funkciók:
 ## Konfiguráció
 
 Két fájl tartalmazza az összes konfigurációt a programhoz:
+* config.ini.sample
+* credentials.ini.sample
+
+Ezeket át kell nevezni, hogy a sample ne legyen benne:
 * config.ini
 * credentials.ini
 

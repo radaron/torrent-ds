@@ -1,5 +1,5 @@
 *.key
 *.sqlite
 *.log*
+*.ini
 __pycache__/
-test_config/
