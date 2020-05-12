@@ -10,12 +10,14 @@ from torrentds.data import (
 )
 
 parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('--format', '-f',
-                    metavar='FORMAT',
+parser.add_argument('--json', '-j',
+                    action="store_true",
+                    help="Output format is json.")
+
+parser.add_argument('--label', '-l',
+                    metavar='LABEL',
                     type=str,
-                    choices=['table', 'json'],
-                    required=True,
-                    help="Output format, should be 'json' or 'table'.")
+                    help="Filter the labels.")
 
 args = parser.parse_args()
 
@@ -23,23 +25,13 @@ global_init(os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "data
 
 session = create_session()
 
-torrents = session.query(Torrent).order_by(Torrent.date.desc()).all()
+torrents = session.query(Torrent).order_by(Torrent.date.desc())
+if args.label:
+    torrents = torrents.filter(Torrent.label.contains(args.label))
+torrents = torrents.all()
 
 
-if args.format == "table":
-    row = "|{:^50}|{:^70}|{:^50}|{:^15}|{:^15}|"
-    separate = "{}".format('-'*206)
-
-    print(separate)
-    print(row.format("Label", "Title", "Date", "Tracker id", "Client id"))
-    print(separate)
-    for t in torrents:
-        print(separate)
-        print(row.format(t.label, t.title, str(t.date), t.tracker_id,
-                         t.transmission_id))
-    print(separate)
-
-elif args.format == "json":
+if args.json:
     json_data = {}
     for t in torrents:
         if t.label not in json_data:
@@ -51,3 +43,16 @@ elif args.format == "json":
             "date": str(t.date)
         })
     print(json.dumps(json_data, indent=2))
+
+else:
+    row = "|{:^50}|{:^70}|{:^50}|{:^15}|{:^15}|"
+    separate = "{}".format('-'*206)
+
+    print(separate)
+    print(row.format("Label", "Title", "Date", "Tracker id", "Client id"))
+    print(separate)
+    for t in torrents:
+        print(separate)
+        print(row.format(t.label, t.title, str(t.date), t.tracker_id,
+                         t.transmission_id))
+    print(separate)
