@@ -97,7 +97,7 @@ class DownloadManager:
             self._logger.exception("Bad credential for label: '{}'.".format(cred.label))
             return None
         except NcoreConnectionError:
-            self._logger.exception("Connection error with tracker.")
+            self._logger.warning("Connection error with tracker.")
             return None
         return client
 
