@@ -45,7 +45,7 @@ if args.json:
     print(json.dumps(json_data, indent=2))
 
 else:
-    row = "|{:^50}|{:^70}|{:^50}|{:^15}|{:^15}|"
+    row = "|{:^40}|{:^90}|{:^40}|{:^15}|{:^15}|"
     separate = "{}".format('-'*206)
 
     print(separate)
@@ -53,6 +53,7 @@ else:
     print(separate)
     for t in torrents:
         print(separate)
-        print(row.format(t.label, t.title, str(t.date), t.tracker_id,
+        title = t.title if len(t.title) <= 80 else "{}...".format(t.title[:77])
+        print(row.format(t.label, title, str(t.date), t.tracker_id,
                          t.transmission_id))
     print(separate)
