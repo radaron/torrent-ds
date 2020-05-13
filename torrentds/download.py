@@ -10,7 +10,7 @@ from ncoreparser import (
     NcoreDownloadError,
     Size
 )
-from transmissionrpc.client import Client as TransmissionClient
+from transmissionrpc import Client as TransmissionClient
 
 from torrentds.data import create_session, Torrent
 from torrentds.creds import Credential
@@ -79,6 +79,7 @@ class DownloadManager:
             cred = Credential("transmission", self._credentials_path, self._key_path)
             params["user"] = cred.username
             params["password"] = cred.password
+        params["timeout"] = 2
 
         try:
             client = TransmissionClient(**params)
