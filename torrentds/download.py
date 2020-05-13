@@ -84,7 +84,7 @@ class DownloadManager:
         try:
             client = TransmissionClient(**params)
         except Exception as e:
-            self._logger.exception("Error while connecting to tranmission-rpc. {}".format(e))
+            self._logger.error("Error while connecting to tranmission-rpc. {}.".format(e))
             return None
         return client
 
@@ -95,7 +95,7 @@ class DownloadManager:
             client.open(cred.username, cred.password)
 
         except NcoreCredentialError:
-            self._logger.exception("Bad credential for label: '{}'.".format(cred.label))
+            self._logger.error("Bad credential for label: '{}'.".format(cred.label))
             return None
         except NcoreConnectionError:
             self._logger.warning("Connection error with tracker.")
