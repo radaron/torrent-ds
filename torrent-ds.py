@@ -12,7 +12,11 @@ from torrentds.data import global_init as db_init
 from torrentds.logger import init_logger
 from torrentds.creds import Credential
 from torrentds.download import DownloadManager
-from torrentds.util import check_time, check_between_time
+from torrentds.util import (
+    check_time,
+    check_between_time,
+    check_sleep_day
+)
 
 def main(conf_path):
     # Load configuration
@@ -23,14 +27,14 @@ def main(conf_path):
     log_path = os.path.join(os.path.abspath("/var/log/"), "torrent-ds.log")
     init_logger("root", log_path)
     logger = logging.getLogger("root")
-
+    logger.info("Config file was loaded: '{}'".format(conf_path))
     try:
         # Init database
         db_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "database.sqlite")
         db_init(db_path)
 
         if config["recommended"].get("enable") != "True":
-            logger.info("Recommended function is disabled. Check config: '{}'.".format(conf_path))
+            logger.info("Recommended function is disabled. Check config.")
 
         start_time = datetime.now()
         start_time_recommended = datetime.now()
@@ -48,10 +52,11 @@ def main(conf_path):
                     DownloadManager(config).download_recommended()
                     start_time_recommended = datetime.now()
 
+            sleep_days = config["transmission"].get("sleep_days")
             sleep_time = config["transmission"].get("sleep_time")
-            if sleep_time:
-                if check_between_time(sleep_time.split('-')[0],
-                                      sleep_time.split('-')[1]):
+            if sleep_time and sleep_days:
+                if (check_between_time(sleep_time.split('-')[0], sleep_time.split('-')[1])
+                    and check_sleep_day(sleep_days.split(';'))):
                     if started:
                         DownloadManager(config).stop_all()
                         started = False

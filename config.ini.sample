@@ -2,6 +2,7 @@
 authenticate = False
 ip_address =
 port =
+sleep_days = 
 sleep_time =
 
 [download]

@@ -146,8 +146,6 @@ class DownloadManager:
         shutil.rmtree(tmp_dir)
 
     def clean_db(self):
-        self._logger.info("Cleaning database...")
-
         client = self._get_transmission_client()
         if client is None:
             return
@@ -161,7 +159,7 @@ class DownloadManager:
                 db_session.delete(item)
                 deleted_cnt += 1
         db_session.commit()
-        self._logger.info("Deleted {} items from db.".format(deleted_cnt))
+        self._logger.info("Cleaned {} items from db.".format(deleted_cnt))
 
         db_session.close()
 
@@ -221,9 +219,9 @@ class DownloadManager:
         client = self._get_transmission_client()
         if client is None:
             return
+        self._logger.info("Starting all torrents.")
         if len(client.get_torrents()) == 0:
             return
-        self._logger.info("Starting all torrents.")
         client.start_all()
 
     def stop_all(self):

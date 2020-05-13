@@ -9,7 +9,7 @@ SqlAlchemyBase = dec.declarative_base()
 __factory = None
 
 
-def global_init(db_file: str):
+def global_init(db_file):
     global __factory
 
     if __factory:
@@ -21,7 +21,7 @@ def global_init(db_file: str):
         raise DataBaseError("You must specify a db file.")
 
     conn_str = 'sqlite:///' + db_file.strip()
-    logger.info("Connecting to DB with {}".format(conn_str))
+    logger.info("Connecting to DB -> {}".format(conn_str))
 
     engine = sa.create_engine(conn_str, echo=False)
     __factory = orm.sessionmaker(bind=engine)

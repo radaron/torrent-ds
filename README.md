@@ -49,6 +49,11 @@ ip_address =          | Opcionális
                       | A transmission remote ip_címe
 port =                | Opcionális
                       | A transmission remote port-ja. Az alapértelmezett: 9091
+sleep_days =          | Opcionális
+                      | A megadott napokon fog érvénybe lépni a sleep_time értéke
+                      | 1:hétfő -> 7:vasárnap, ;-vel elválasztva. Pl.: 1;2;3;4;5
+                      | vagyis hétfő,kedd,szerda,csütörtök,péntek. Ezeken a napokon
+                      | fog végrehajtódni.
 sleep_time =          | Opcionális
                       | A megadott intervallumban az aktuálisan futó torrenteket
                       | szünetelteti. A formátum: 00:00:00-00:00:00

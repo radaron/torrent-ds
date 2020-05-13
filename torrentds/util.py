@@ -14,3 +14,6 @@ def check_between_time(before, after):
     now = datetime.now().time()
     return before < now < after
 
+def check_sleep_day(days_list):
+    # isoweekday -> 1:monday 7:sunday
+    return str(datetime.now().isoweekday()) in days_list
