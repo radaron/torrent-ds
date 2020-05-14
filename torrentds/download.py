@@ -79,7 +79,6 @@ class DownloadManager:
             cred = Credential("transmission", self._credentials_path, self._key_path)
             params["user"] = cred.username
             params["password"] = cred.password
-        params["timeout"] = 2
 
         try:
             client = TransmissionClient(**params)
@@ -183,6 +182,7 @@ class DownloadManager:
             except NcoreConnectionError:
                 self._logger.warning("Unable to connect to tracker, "
                                      "while get rss.")
+                return
 
             for torrent in torrents:
                 self._add_torrent(torrent, tracker_client, transmission_client, rss)
