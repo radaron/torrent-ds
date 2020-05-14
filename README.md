@@ -1,13 +1,13 @@
 # Torrent-ds service
  
 ## Leírás     
-Torrentszerver applikáció az Ncore-hoz. Képes kezelni az rss feed-eket illetve az Ncore ajánlott funkcióját.
-Öszekapcsolható a Transmisison-al, ami le tudja tölteni a torrent fájljait.
+Torrentszerver applikáció Ncore-hoz. Képes kezelni az rss feed-eket illetve az Ncore ajánlott funkcióját.
+Öszekapcsolható a Transmisison-al, ami le tudja tölteni a torrent tartalmát.
                                                                                  
 Funkciók:                                                                        
-* Periódikusan megnyitja a torrenteket az rss feed linkeket használva, és a meghatározott kategóriákat képes külön könyvtárakba letölteni.
+* Periódikusan megnyitja a torrenteket az rss feed linkeket használva, és a meghatározott kategóriákat képes külön könyvtárakba letölteni. (Bármennyi rss link megadható)
 * A konfigurációban meghatározott intervallum alatt leállítja az összes torrentet (pl.: napközben munka mellett) (opcionális)
-* Meghatározott időnként letölteni a staff által ajánlottnak jelölt torrenteket, kategóriánként beállított könyvtárakba (opcionális)
+* Meghatározott időnként letölti a staff által ajánlottnak jelölt torrenteket, kategóriánként beállított könyvtárakba (opcionális)
    
    
 ## Telepítés
