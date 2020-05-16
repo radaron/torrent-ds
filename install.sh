@@ -9,15 +9,22 @@ echo "Installing torrent-ds..."
 
 SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
-cd $SCRIPTPATH
+
+echo "Installing os dependencies..."
+apt install python3-pip python-dev python3-dev build-essential libssl-dev
+
+echo "Installing setuptools..."
+/usr/bin/python3.5 -m pip install setuptools
 
 echo "Installing pipenv..."
 /usr/bin/python3.5 -m pip install pipenv
 
+cd $SCRIPTPATH
+
 echo "Installing dependencies..."
 /usr/local/bin/pipenv install
 
-echo "Setting daemon..."
+echo "Setting torrent-ds daemon..."
 echo "[Unit]
 Description=Torrent-ds service
 After=multi-user.target
@@ -38,3 +45,4 @@ WantedBy=multi-user.target" > /etc/systemd/system/torrent-ds.service
 
 systemctl daemon-reload
 systemctl enable torrent-ds.service
+systemctl start torrent-ds.service
