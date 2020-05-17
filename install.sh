@@ -13,11 +13,8 @@ SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 echo "Installing os dependencies..."
 apt install python3-pip python-dev python3-dev build-essential libssl-dev
 
-echo "Installing setuptools..."
-/usr/bin/python3.5 -m pip install setuptools
-
-echo "Installing pipenv..."
-/usr/bin/python3.5 -m pip install pipenv
+echo "Installing setuptools and pipenv..."
+/usr/bin/python3 -m pip install setuptools pipenv
 
 cd $SCRIPTPATH
 
