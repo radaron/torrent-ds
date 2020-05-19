@@ -14,6 +14,7 @@ Funkciók:
  
 1. Klónozni a github repo-t:
   ```
+  cd ~
   git clone https://github.com/radaron/torrent-ds.git
   ```
     
