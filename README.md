@@ -137,15 +137,10 @@ sudo systemctl start torrent-ds
 ```
 sudo systemctl stop torrent-ds
 ```
-### torrent-ds service újraindítása
-```
-sudo systemctl restart torrent-ds
-```
 ### logok megtekintése
 ```
-less +F /var/log/torrent-ds.log
+less /var/log/torrent-ds.log
 ```
-
 ### Bármilyen konfiguráció módosítása után újraindítás szükséges
 ```
 sudo systemctl restart torrent-ds
