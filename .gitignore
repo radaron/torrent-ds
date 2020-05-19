@@ -3,3 +3,4 @@
 *.log*
 *.ini
 __pycache__/
+Pipfile.lock

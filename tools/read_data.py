@@ -19,6 +19,10 @@ parser.add_argument('--label', '-l',
                     type=str,
                     help="Filter the labels.")
 
+parser.add_argument('--number', '-n',
+                    action="store_true",
+                    help="Print number of torrents.")
+
 args = parser.parse_args()
 
 global_init(os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "database.sqlite"))
@@ -30,8 +34,11 @@ if args.label:
     torrents = torrents.filter(Torrent.label.contains(args.label))
 torrents = torrents.all()
 
+if args.number:
+    print("Number of opened torrents: "
+          "{}.".format(session.query(Torrent).count()))
 
-if args.json:
+elif args.json:
     json_data = {}
     for t in torrents:
         if t.label not in json_data:
@@ -57,3 +64,5 @@ else:
         print(row.format(t.label, title, str(t.date), t.tracker_id,
                          t.transmission_id))
     print(separate)
+
+
