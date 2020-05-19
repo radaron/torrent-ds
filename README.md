@@ -24,6 +24,7 @@ Funkciók:
                                                           
 3. Telepíteni:
   ```
+  cd ~/torrent-ds
   sudo ./install.sh
   ```
 
