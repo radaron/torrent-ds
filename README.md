@@ -12,10 +12,17 @@ Funkciók:
    
 ## Telepítés
  
-1. Klónozni a github repo-t:
+1. Letölteni az utolsó release-t:
   ```
   cd ~
-  git clone https://github.com/radaron/torrent-ds.git
+  wget https://github.com/radaron/torrent-ds/archive/<verzio>.zip
+  unzip <verzio>.zip
+  ```
+  például:
+  ```
+  cd ~
+  wget https://github.com/radaron/torrent-ds/archive/v1.0.zip
+  unzip v1.0.zip
   ```
     
 2. Konfiguráció
@@ -24,7 +31,7 @@ Funkciók:
                                                           
 3. Telepíteni:
   ```
-  cd ~/torrent-ds
+  cd ~/torrent-ds-<verzio>
   sudo ./install.sh
   ```
 
