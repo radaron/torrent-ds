@@ -209,6 +209,7 @@ class DownloadManager:
                 except NcoreConnectionError:
                     self._logger.warning("Unable to connect to tracker,"
                                          " while getting recommended.")
+                    continue
                 for torrent in torrents:
                     if size_cfg and torrent['size'] > Size(size_cfg):
                         self._logger.info("Skipping torrent '{}', it is too large: '{}'.".format(torrent['title'],
