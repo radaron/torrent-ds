@@ -150,7 +150,11 @@ class DownloadManager:
         if client is None:
             return
 
-        client_ids = [torrent.id for torrent in client.get_torrents()]
+        try:
+            client_ids = [torrent.id for torrent in client.get_torrents()]
+        except Exception: # Error while get torrents (timeout)
+            self._logger.warning("Unable to clean database (time out)")
+            return
         deleted_cnt = 0
         db_session = create_session()
         db_torrents = db_session.query(Torrent).all()
