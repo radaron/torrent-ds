@@ -8,6 +8,7 @@ from ncoreparser import (
     NcoreCredentialError,
     NcoreConnectionError,
     NcoreDownloadError,
+    NcoreParserError,
     Size
 )
 from transmissionrpc import Client as TransmissionClient
@@ -99,6 +100,9 @@ class DownloadManager:
         except NcoreConnectionError:
             self._logger.warning("Connection error with tracker.")
             return None
+        except NcoreParserError as e:
+            self._logger.warning("Error while parsing web page. {}".format(e))
+            return None
         return client
 
     def _get_download_path(self, torrent, label):
@@ -121,6 +125,9 @@ class DownloadManager:
             return None
         except NcoreDownloadError as e:
             self._logger.warning(e.args[0])
+            return None
+        except NcoreParserError as e:
+            self._logger.warning("Error while parsing web page. {}".format(e))
             return None
 
         d_path = self._get_download_path(torrent, label)
@@ -187,6 +194,9 @@ class DownloadManager:
                 self._logger.warning("Unable to connect to tracker, "
                                      "while get rss.")
                 return
+            except NcoreParserError as e:
+                self._logger.warning("Error while parsing web page. {}".format(e))
+                return
 
             for torrent in torrents:
                 self._add_torrent(torrent, tracker_client, transmission_client, rss)
@@ -213,6 +223,9 @@ class DownloadManager:
                 except NcoreConnectionError:
                     self._logger.warning("Unable to connect to tracker,"
                                          " while getting recommended.")
+                    continue
+                except NcoreParserError as e:
+                    self._logger.warning("Error while parsing web page. {}".format(e))
                     continue
                 for torrent in torrents:
                     if size_cfg and torrent['size'] > Size(size_cfg):
