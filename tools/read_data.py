@@ -14,14 +14,20 @@ parser.add_argument('--json', '-j',
                     action="store_true",
                     help="Output format is json.")
 
+parser.add_argument('--number', '-n',
+                    action="store_true",
+                    help="Print number of torrents.")
+
 parser.add_argument('--label', '-l',
                     metavar='LABEL',
                     type=str,
                     help="Filter the labels.")
 
-parser.add_argument('--number', '-n',
-                    action="store_true",
-                    help="Print number of torrents.")
+parser.add_argument('--title', '-t',
+                    metavar='TITLE',
+                    type=str,
+                    help="Filter the title.")
+
 
 args = parser.parse_args()
 
@@ -30,13 +36,18 @@ global_init(os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "data
 session = create_session()
 
 torrents = session.query(Torrent).order_by(Torrent.date.desc())
-if args.label:
-    torrents = torrents.filter(Torrent.label.contains(args.label))
-torrents = torrents.all()
+if args.label or args.title:
+    if args.label:
+        torrents = torrents.filter(Torrent.label.contains(args.label))
+    if args.title:
+        torrents = torrents.filter(Torrent.title.contains(args.title))
+else:
+    torrents = torrents.all()
 
 if args.number:
-    print("Number of opened torrents: "
-          "{}.".format(session.query(Torrent).count()))
+    print("Number of torrents: "
+          "{}.".format(len(list(torrents))))
+    sys.exit(0)
 
 elif args.json:
     json_data = {}
