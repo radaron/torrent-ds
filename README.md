@@ -72,7 +72,7 @@ retry_interval = 10   | Kötelező
                       | Az rss feed-ek ellenőrzési intervalluma másodperben
 
 [recommended]         | A staff által ajánlottnak jelölt torrentek letöltése
-                      | periódikusan megadott periódusonként.
+                      | meghatározottan periódusonként.
 enable = False        | Kötelező
                       | Lehetséges értékek True és False.
 credential = cred1    | Kötelező
