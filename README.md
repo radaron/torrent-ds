@@ -1,17 +1,17 @@
 # Torrent-ds service
- 
-## Leírás     
+
+## Leírás
 Torrentszerver applikáció Ncore-hoz. Képes kezelni az rss feed-eket illetve az Ncore ajánlott funkcióját.
 Öszekapcsolható a Transmisison-al, ami le tudja tölteni a torrent tartalmát.
-                                                                                 
-Funkciók:                                                                        
+
+Funkciók:
 * Periódikusan megnyitja a torrenteket az rss feed linkeket használva, és a meghatározott kategóriákat képes külön könyvtárakba letölteni. (Bármennyi rss link megadható)
 * A konfigurációban meghatározott intervallum alatt leállítja az összes torrentet (pl.: napközben munka mellett) (opcionális)
 * Meghatározott időnként letölti a staff által ajánlottnak jelölt torrenteket, kategóriánként beállított könyvtárakba (opcionális)
-   
-   
+
+
 ## Telepítés
- 
+
 1. Letölteni az utolsó release-t:
   ```
   cd ~
@@ -24,11 +24,11 @@ Funkciók:
   wget https://github.com/radaron/torrent-ds/archive/v1.0.zip
   unzip v1.0.zip
   ```
-    
+
 2. Konfiguráció
 
   [konfiguráció](#Konfiguráció)
-                                                          
+
 3. Telepíteni:
   ```
   cd ~/torrent-ds-<verzio>
@@ -50,9 +50,9 @@ Minden szekció ([]-ben) kötelező mező (kivéve az rss), a többi lehet opcio
 ```
 [transmission]
 authenticate = False  | Kötelező
-                      | A lehetséges értékek: True és False. 
+                      | A lehetséges értékek: True és False.
                       | Értelemszerűen ha azonosításra van szükség: True.
-                      | A hozzá tartozó azonosító adatokat a credentials.ini fájl 
+                      | A hozzá tartozó azonosító adatokat a credentials.ini fájl
                       | [transmission] szekcióban kell definiálni
 ip_address =          | Opcionális
                       | A transmission remote ip_címe
@@ -71,7 +71,8 @@ sleep_time =          | Opcionális
 retry_interval = 10   | Kötelező
                       | Az rss feed-ek ellenőrzési intervalluma másodperben
 
-[recommended]
+[recommended]         | A staff által ajánlottnak jelölt torrentek letöltése
+                      | periódikusan megadott periódusonként.
 enable = False        | Kötelező
                       | Lehetséges értékek True és False.
 credential = cred1    | Kötelező
@@ -81,7 +82,8 @@ categories =          | Opcionális
                       | movies;series;musics;games;books;programs;xxx
 max_size = 3 GB       | Kötelező
                       | Maximum limit. Az ennél nagyobb méretű torrenteket nem tölti le
-                      | ajánlott módban
+                      | ajánlott módban. Lehetséges dimenziók: KB, MB, GB, TB.
+                      | A helyes formátum: '<érték> <dimenzió>'
 retry_interval = 5    | Kötelező
                       | Az ajánlott torrentek letöltésének gyakorisága (órában)
 movies =              | A filmeket az itt megadott mappába tölti le pl: /home/osmc/Downloads/movies
@@ -90,7 +92,7 @@ musics =              | A zenéket az itt megadott mappába tölti le pl: /home/
 games =               | A játékokat az itt megadott mappába tölti le pl: /home/osmc/Downloads/games
 books =               | A könyveket az itt megadott mappába tölti le pl: /home/osmc/Downloads/books
 programs =            | A filmeket az itt megadott mappába tölti le pl: /home/osmc/Downloads/movies
-xxx = 
+xxx =
 
 [rss bookmark1]       | Az rss-el kezdődő szekció: [rss <szekciónév>] pl: [rss Bela_rss]
 credential = cred1    | Kötelező
@@ -102,7 +104,7 @@ musics =              | A zenéket az itt megadott mappába tölti le pl: /home/
 games =               | A játékokat az itt megadott mappába tölti le pl: /home/osmc/Downloads/games
 books =               | A könyveket az itt megadott mappába tölti le pl: /home/osmc/Downloads/books
 programs =            | A filmeket az itt megadott mappába tölti le pl: /home/osmc/Downloads/movies
-xxx = 
+xxx =
 
 [rss bookmark2]       | Bármennyi rss szekció használható
 credential = cred2
@@ -110,7 +112,7 @@ url =
 movies =
 series =
 musics =
-clips = 
+clips =
 games =
 books =
 programs =
@@ -123,7 +125,7 @@ A username értéke legyen a felhasználónév és a raw_password a jelszó. A j
 és visszakerül a password értékeként, a raw_password törlődik.
 ```
 [transmission]      | Azonsító a Transmission-hoz. Ha az authenticate értéke True a config.ini-ben
-user_name =         | Transmission felhasználónév 
+user_name =         | Transmission felhasználónév
 raw_password =      | Transmission jelszó
 password =          | Titkosított jelszó. Automatikusan íródik ki
 
