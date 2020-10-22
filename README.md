@@ -91,7 +91,7 @@ series =              | A sorozatokat az itt megadott mappába tölti le pl: /ho
 musics =              | A zenéket az itt megadott mappába tölti le pl: /home/osmc/Downloads/musics
 games =               | A játékokat az itt megadott mappába tölti le pl: /home/osmc/Downloads/games
 books =               | A könyveket az itt megadott mappába tölti le pl: /home/osmc/Downloads/books
-programs =            | A filmeket az itt megadott mappába tölti le pl: /home/osmc/Downloads/movies
+programs =            | A filmeket az itt megadott mappába tölti le pl: /home/osmc/Downloads/programs
 xxx =
 
 [rss bookmark1]       | Az rss-el kezdődő szekció: [rss <szekciónév>] pl: [rss Bela_rss]
@@ -103,7 +103,7 @@ series =              | A sorozatokat az itt megadott mappába tölti le pl: /ho
 musics =              | A zenéket az itt megadott mappába tölti le pl: /home/osmc/Downloads/musics
 games =               | A játékokat az itt megadott mappába tölti le pl: /home/osmc/Downloads/games
 books =               | A könyveket az itt megadott mappába tölti le pl: /home/osmc/Downloads/books
-programs =            | A filmeket az itt megadott mappába tölti le pl: /home/osmc/Downloads/movies
+programs =            | A filmeket az itt megadott mappába tölti le pl: /home/osmc/Downloads/programs
 xxx =
 
 [rss bookmark2]       | Bármennyi rss szekció használható
@@ -129,7 +129,7 @@ user_name =         | Transmission felhasználónév
 raw_password =      | Transmission jelszó
 password =          | Titkosított jelszó. Automatikusan íródik ki
 
-[cred1]             | Azonisító mező az Ncore-hoz. Bármilyen nevet kaphat pl.: [Bela]
+[cred1]             | Azonosító mező az Ncore-hoz. Bármilyen nevet kaphat pl.: [Bela]
 user_name =         | Felhasználónév
 raw_password =      | Jelszó
 password =          | Titkosított jelszó.
