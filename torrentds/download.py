@@ -116,6 +116,7 @@ class DownloadManager:
 
     def _reached_limit(self, db_session, label):
         # Get number of torrents for label in the target month
+        # Returns True if reached the limit
         now = datetime.now()
         last_day = monthrange(now.year, now.month)[1]
         start_date = datetime(year=now.year, month=now.month, day=1)
@@ -123,8 +124,9 @@ class DownloadManager:
         torrents = db_session.query(Torrent.label.contains(label)).filter(Torrent.date >= start_date).filter(Torrent.date <= end_date).count()
         limit = self._config[label].get("limit")
         if limit:
+            limit = int(limit)
             if torrents >= limit:
-                self._logger.warning("The download limit is reached. Label: {}, limit: {}/{}".format(label, torrents, limit))
+                self._logger.info("The download limit is reached. Label: {}, limit: {}/{}".format(label, torrents, limit))
                 return True
         return False
 
@@ -164,15 +166,15 @@ class DownloadManager:
         else:
             d_path = "default download dir."
             args = {}
-            new_torrent = tranmission_client.add_torrent(file_path, **args)
-            torrent_db = Torrent()
-            torrent_db.tracker_id = torrent["id"]
-            torrent_db.transmission_id = new_torrent.id
-            torrent_db.title = torrent["title"]
-            torrent_db.label = label
-            db_session.add(torrent_db)
-            db_session.commit()
-            self._logger.info("Download torrent: '{}' to '{}'.".format(torrent['title'], d_path))
+        new_torrent = tranmission_client.add_torrent(file_path, **args)
+        torrent_db = Torrent()
+        torrent_db.tracker_id = torrent["id"]
+        torrent_db.transmission_id = new_torrent.id
+        torrent_db.title = torrent["title"]
+        torrent_db.label = label
+        db_session.add(torrent_db)
+        db_session.commit()
+        self._logger.info("Download torrent: '{}' to '{}'.".format(torrent['title'], d_path))
         shutil.rmtree(tmp_dir)
         db_session.close()
 

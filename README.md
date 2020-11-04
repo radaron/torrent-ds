@@ -97,7 +97,8 @@ xxx =
 [rss bookmark1]       | Az rss-el kezdődő szekció: [rss <szekciónév>] pl: [rss Bela_rss]
 credential = cred1    | Kötelező
                       | Azonosító szekció a credentials.ini fájlban
-url =                 | Rss url -> ncore könyvjelzők
+url =                 | Kötelező, Rss url -> ncore könyvjelzők
+limit =               | Letölthető torrentek száma havonta
 movies =              | A filmeket az itt megadott mappába tölti le pl: /home/osmc/Downloads/movies
 series =              | A sorozatokat az itt megadott mappába tölti le pl: /home/osmc/Downloads/series
 musics =              | A zenéket az itt megadott mappába tölti le pl: /home/osmc/Downloads/musics
