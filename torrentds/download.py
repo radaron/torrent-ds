@@ -135,11 +135,11 @@ class DownloadManager:
             return
         db_session = create_session()
 
-        if self._reached_limit(db_session, label):
+        if db_session.query(Torrent).filter_by(tracker_id=torrent["id"]).count() != 0:
             db_session.close()
             return
 
-        if db_session.query(Torrent).filter_by(tracker_id=torrent["id"]).count() != 0:
+        if self._reached_limit(db_session, label):
             db_session.close()
             return
 
