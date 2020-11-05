@@ -12,18 +12,9 @@ Funkciók:
 
 ## Telepítés
 
-1. Letölteni az utolsó release-t:
-  ```
-  cd ~
-  wget https://github.com/radaron/torrent-ds/archive/<verzio>.zip
-  unzip <verzio>.zip
-  ```
-  például:
-  ```
-  cd ~
-  wget https://github.com/radaron/torrent-ds/archive/v1.0.zip
-  unzip v1.0.zip
-  ```
+1. Letölteni az utolsó release zip-et:
+
+  https://github.com/radaron/torrent-ds/releases/latest
 
 2. Konfiguráció
 
