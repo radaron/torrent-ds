@@ -2,6 +2,8 @@ import os
 import shutil
 import logging
 import tempfile
+from datetime import datetime
+from calendar import monthrange
 from ncoreparser import Client as NcoreClient
 from ncoreparser import (
     SearchParamType,
@@ -112,44 +114,68 @@ class DownloadManager:
                     full_path = self._config[label].get(path)
                     return full_path if full_path else None
 
+    def _reached_limit(self, db_session, label):
+        # Get number of torrents for label in the target month
+        # Returns True if reached the limit
+        now = datetime.now()
+        last_day = monthrange(now.year, now.month)[1]
+        start_date = datetime(year=now.year, month=now.month, day=1)
+        end_date = datetime(year=now.year, month=now.month, day=last_day)
+        torrents = db_session.query(Torrent.label.contains(label)).filter(Torrent.date >= start_date).filter(Torrent.date <= end_date).count()
+        limit = self._config[label].get("limit")
+        if limit:
+            limit = int(limit)
+            if torrents >= limit:
+                self._logger.info("The download limit is reached. Label: {}, limit: {}/{}".format(label, torrents, limit))
+                return True
+        return False
+
     def _add_torrent(self, torrent, tracker_client, tranmission_client, label):
         if tracker_client is None:
             return
         db_session = create_session()
-        if db_session.query(Torrent).filter_by(tracker_id=torrent["id"]).count() == 0:
-            tmp_dir = tempfile.mkdtemp()
-            os.chmod(tmp_dir, 0o777)
-            try:
-                file_path = tracker_client.download(torrent, tmp_dir)
-            except NcoreConnectionError:
-                self._logger.warning("Unable to connect to tracker while"
-                                     " downloading '{}'.".format(torrent['title']))
-                return None
-            except NcoreDownloadError as e:
-                self._logger.warning(e.args[0])
-                return None
-            except NcoreParserError as e:
-                self._logger.warning("Error while parsing web page. {}".format(e))
-                return None
 
-            d_path = self._get_download_path(torrent, label)
-            if d_path:
-                args = {
-                    "download_dir": os.path.abspath(d_path)
-                }
-            else:
-                d_path = "default download dir."
-                args = {}
-                new_torrent = tranmission_client.add_torrent(file_path, **args)
-                torrent_db = Torrent()
-                torrent_db.tracker_id = torrent["id"]
-                torrent_db.transmission_id = new_torrent.id
-                torrent_db.title = torrent["title"]
-                torrent_db.label = label
-                db_session.add(torrent_db)
-                db_session.commit()
-                self._logger.info("Download torrent: '{}' to '{}'.".format(torrent['title'], d_path))
-            shutil.rmtree(tmp_dir)
+        if db_session.query(Torrent).filter_by(tracker_id=torrent["id"]).count() != 0:
+            db_session.close()
+            return
+
+        if self._reached_limit(db_session, label):
+            db_session.close()
+            return
+
+        tmp_dir = tempfile.mkdtemp()
+        os.chmod(tmp_dir, 0o777)
+        try:
+            file_path = tracker_client.download(torrent, tmp_dir)
+        except NcoreConnectionError:
+            self._logger.warning("Unable to connect to tracker while"
+                                 " downloading '{}'.".format(torrent['title']))
+            return None
+        except NcoreDownloadError as e:
+            self._logger.warning(e.args[0])
+            return None
+        except NcoreParserError as e:
+            self._logger.warning("Error while parsing web page. {}".format(e))
+            return None
+
+        d_path = self._get_download_path(torrent, label)
+        if d_path:
+            args = {
+                "download_dir": os.path.abspath(d_path)
+            }
+        else:
+            d_path = "default download dir."
+            args = {}
+        new_torrent = tranmission_client.add_torrent(file_path, **args)
+        torrent_db = Torrent()
+        torrent_db.tracker_id = torrent["id"]
+        torrent_db.transmission_id = new_torrent.id
+        torrent_db.title = torrent["title"]
+        torrent_db.label = label
+        db_session.add(torrent_db)
+        db_session.commit()
+        self._logger.info("Download torrent: '{}' to '{}'.".format(torrent['title'], d_path))
+        shutil.rmtree(tmp_dir)
         db_session.close()
 
     def clean_db(self):
