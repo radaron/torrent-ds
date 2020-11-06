@@ -44,6 +44,8 @@ if args.label or args.title:
 else:
     torrents = torrents.all()
 
+session.close()
+
 if args.number:
     print("Number of torrents: "
           "{}.".format(len(list(torrents))))

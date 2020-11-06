@@ -121,7 +121,8 @@ class DownloadManager:
         last_day = monthrange(now.year, now.month)[1]
         start_date = datetime(year=now.year, month=now.month, day=1)
         end_date = datetime(year=now.year, month=now.month, day=last_day)
-        torrents = db_session.query(Torrent.label.contains(label)).filter(Torrent.date >= start_date).filter(Torrent.date <= end_date).count()
+        torrents = db_session.query(Torrent).filter(Torrent.date.between(start_date, end_date)) \
+                                            .filter(Torrent.label.constraints(label)).count()
         limit = self._config[label].get("limit")
         if limit:
             limit = int(limit)
@@ -135,7 +136,7 @@ class DownloadManager:
             return
         db_session = create_session()
 
-        if db_session.query(Torrent).filter_by(tracker_id=torrent["id"]).count() != 0:
+        if db_session.query(Torrent).filter(Torrent.tracker_id==torrent["id"]).count() != 0:
             db_session.close()
             return
 
