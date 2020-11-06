@@ -122,7 +122,7 @@ class DownloadManager:
         start_date = datetime(year=now.year, month=now.month, day=1)
         end_date = datetime(year=now.year, month=now.month, day=last_day)
         torrents = db_session.query(Torrent).filter(Torrent.date.between(start_date, end_date)) \
-                                            .filter(Torrent.label.constraints(label)).count()
+                                            .filter(Torrent.label.contains(label)).count()
         limit = self._config[label].get("limit")
         if limit:
             limit = int(limit)
