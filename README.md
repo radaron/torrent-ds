@@ -73,7 +73,7 @@ categories =          | Opcionális
                       | movies;series;musics;games;books;programs;xxx
 max_size = 3 GB       | Kötelező
                       | Maximum limit. Az ennél nagyobb méretű torrenteket nem tölti le
-                      | ajánlott módban. Lehetséges dimenziók: KB, MB, GB, TB.
+                      | ajánlott módban. Lehetséges dimenziók: KiB, MiB, GiB, TiB.
                       | A helyes formátum: '<érték> <dimenzió>'
 retry_interval = 5    | Kötelező
                       | Az ajánlott torrentek letöltésének gyakorisága (órában)
