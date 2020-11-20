@@ -13,7 +13,7 @@ retry_interval = 10
 enable = False
 credential = cred1
 categories = movies;series;musics;games;programs;books;xxx
-max_size = 3 GB
+max_size = 3 GiB
 # hour
 retry_interval = 5
 movies =
