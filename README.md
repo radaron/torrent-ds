@@ -71,7 +71,7 @@ credential = cred1    | Kötelező
 categories =          | Opcionális
                       | ;-vel elválasztva a kategóriákat. A kategóriák az alábbiak lehetnek:
                       | movies;series;musics;games;books;programs;xxx
-max_size = 3 GB       | Kötelező
+max_size = 3 GiB      | Opcionális
                       | Maximum limit. Az ennél nagyobb méretű torrenteket nem tölti le
                       | ajánlott módban. Lehetséges dimenziók: KiB, MiB, GiB, TiB.
                       | A helyes formátum: '<érték> <dimenzió>'
