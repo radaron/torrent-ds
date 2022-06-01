@@ -12,18 +12,8 @@ Funkciók:
 
 ## Telepítés
 
-1. Letölteni az utolsó release zip-et:
-
-  https://github.com/radaron/torrent-ds/releases/latest
-
-2. Konfiguráció
-
-  [konfiguráció](#Konfiguráció)
-
-3. Telepíteni:
   ```
-  cd ~/torrent-ds-<verzio>
-  sudo ./install.sh
+  sudo wget -O - https://gist.githubusercontent.com/radaron/80b2d288e295750518788c2a79a4cc9f/raw/torrent-ds.sh | bash
   ```
 
 ## Konfiguráció
