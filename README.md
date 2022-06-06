@@ -13,7 +13,7 @@ Funkciók:
 ## Telepítés
 
   ```
-  sudo wget -O - https://gist.githubusercontent.com/radaron/80b2d288e295750518788c2a79a4cc9f/raw/torrent-ds.sh | bash
+  curl -sSL https://gist.githubusercontent.com/radaron/80b2d288e295750518788c2a79a4cc9f/raw/torrent-ds.sh | bash
   ```
 
 ## Konfiguráció
@@ -132,7 +132,7 @@ sudo systemctl stop torrent-ds
 ```
 ### logok megtekintése
 ```
-less /var/log/torrent-ds.log
+less torrent-ds/torrent-ds.log
 ```
 ### Bármilyen konfiguráció módosítása után újraindítás szükséges
 ```
