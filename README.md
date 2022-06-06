@@ -132,7 +132,7 @@ sudo systemctl stop torrent-ds
 ```
 ### logok megtekintése
 ```
-less /var/log/torrent-ds.log
+less torrent-ds/torrent-ds.log
 ```
 ### Bármilyen konfiguráció módosítása után újraindítás szükséges
 ```
