@@ -24,7 +24,7 @@ def main(conf_path):
     config.read(conf_path)
 
     # Initialize logger
-    log_path = os.path.join(os.path.abspath("/var/log/"), "torrent-ds.log")
+    log_path = os.path.join(os.path.dirname(__file__), "torrent-ds.log")
     init_logger("root", log_path)
     logger = logging.getLogger("root")
     logger.info("Config file was loaded: '{}'".format(conf_path))
