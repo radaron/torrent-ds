@@ -13,6 +13,6 @@ def init_logger(name, log_path):
 
     logger = logging.getLogger(name)
     logger.addHandler(my_handler)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
 
     logger.info("Logging was initialized.")
