@@ -94,7 +94,7 @@ class DownloadManager:
         cred = Credential(credential_title, self._credentials_path, self._key_path)
         try:
             client = NcoreClient(timeout=2)
-            client.open(cred.username, cred.password)
+            client.login(cred.username, cred.password)
 
         except NcoreCredentialError:
             self._logger.error("Bad credential for label: '{}'.".format(cred.label))
@@ -227,7 +227,7 @@ class DownloadManager:
 
             for torrent in torrents:
                 self._add_torrent(torrent, tracker_client, transmission_client, rss)
-            tracker_client.close()
+            tracker_client.logout()
 
     def download_recommended(self):
         tracker_client = self._get_tracker_client(self._config["recommended"]["credential"])
@@ -260,6 +260,7 @@ class DownloadManager:
                                                                                                  torrent['size']))
                         continue
                     self._add_torrent(torrent, tracker_client, transmission_client, "recommended")
+        tracker_client.logout()
 
     def start_all(self):
         client = self._get_transmission_client()
