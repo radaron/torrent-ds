@@ -12,19 +12,34 @@ Funkciók:
 
 ## Telepítés
 
-  ```
-  curl -sSL https://gist.githubusercontent.com/radaron/80b2d288e295750518788c2a79a4cc9f/raw/torrent-ds.sh | bash
-  ```
+```
+pip install torrent-ds --upgrade --user
+```
+```
+echo "[Unit]
+Description=Torrent-ds service
+After=multi-user.target
+Conflicts=getty@tty1.service
+[Service]
+User=${USER}
+Type=simple
+Environment="LC_ALL=C.UTF-8"
+Environment="LANG=C.UTF-8"
+ExecStart=${HOME}/.local/bin/torrent-ds
+[Install]
+WantedBy=multi-user.target" | sudo tee /etc/systemd/system/torrent-ds.service
+```
+```
+sudo systemctl daemon-reload
+sudo systemctl enable torrent-ds.service
+sudo systemctl start torrent-ds.service
+```
 
 ## Konfiguráció
 
 Két fájl tartalmazza az összes konfigurációt a programhoz:
-* config.ini.sample
-* credentials.ini.sample
-
-Ezeket át kell nevezni, hogy a sample ne legyen benne:
-* config.ini
-* credentials.ini
+* $HOME/.config/torrent_ds/config.ini
+* $HOME/.config/torrent_ds/credentials.ini
 
 ### config.ini
 Minden szekció ([]-ben) kötelező mező (kivéve az rss), a többi lehet opcionális vagy kötelező.
@@ -132,7 +147,7 @@ sudo systemctl stop torrent-ds
 ```
 ### logok megtekintése
 ```
-less torrent-ds/torrent-ds.log
+journalctl -f | grep torrent-ds
 ```
 ### Bármilyen konfiguráció módosítása után újraindítás szükséges
 ```
