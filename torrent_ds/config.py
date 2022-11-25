@@ -106,7 +106,6 @@ def load_credentials():
         with open(CREDENTIAL_PATH, 'w') as f:
             f.write(CREDENTIALS_SAMPLE)
         credentials.read(CREDENTIAL_PATH)
-    logger.info(f"Read credentials file: '{CREDENTIAL_PATH}'")
     return CREDENTIAL_PATH, credentials
 
 

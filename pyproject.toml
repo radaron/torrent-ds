@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "torrent_ds"
-version = "2.0.2"
+version = "2.0.3"
 description = "Manage downloads using ncoreparser package."
 authors = ["Aron Radics <aron.radics.jozsef@gmail.com>"]
 license = "MIT"
