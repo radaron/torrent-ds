@@ -3,38 +3,33 @@ import sys
 import logging
 import time
 import inspect
-from datetime import datetime, timedelta
-from configparser import ConfigParser
+from datetime import datetime
 
-import torrentds.error
-from torrentds.error import MissingConfigError
-from torrentds.data import global_init as db_init
-from torrentds.logger import init_logger
-from torrentds.creds import Credential
-from torrentds.download import DownloadManager
-from torrentds.util import (
+import torrent_ds.error
+from torrent_ds.error import MissingConfigError
+from torrent_ds.data import global_init as db_init
+from torrent_ds.logger import init_logger
+from torrent_ds.download import DownloadManager
+from torrent_ds.config import load_config
+from torrent_ds.util import (
     check_time,
     check_between_time,
     check_sleep_day
 )
 
-def main(conf_path):
-    # Load configuration
-    config = ConfigParser()
-    config.read(conf_path)
-
+def main():
     # Initialize logger
-    log_path = os.path.join(os.path.dirname(__file__), "torrent-ds.log")
-    init_logger("root", log_path)
-    logger = logging.getLogger("root")
-    logger.info("Config file was loaded: '{}'".format(conf_path))
+    init_logger()
+
+    # Load configuration
+    _, config = load_config()
+
+    logger = logging.getLogger("torrent-ds")
     try:
-        # Init database
-        db_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "database.sqlite")
-        db_init(db_path)
+        db_init()
 
         if config["recommended"].get("enable") != "True":
-            logger.info("Recommended function is disabled. Check config.")
+            logger.info("Recommended function is disabled. Skip.")
 
         start_time = datetime.now()
         start_time_recommended = datetime.now()
@@ -72,7 +67,7 @@ def main(conf_path):
         sys.exit(0)
 
     except Exception as e:
-        for _, obj in inspect.getmembers(torrentds.error):
+        for _, obj in inspect.getmembers(torrent_ds.error):
             if inspect.isclass(obj) and isinstance(e, obj):
                 sys.exit(1)
         logger.exception("Unhandled exception: {}".format(e))
@@ -80,7 +75,4 @@ def main(conf_path):
 
 
 if __name__ == "__main__":
-    config_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "config.ini")
-    if not os.path.exists(config_path):
-        raise MissingConfigError("Config file is not exist: '{}'".format(config_path))
-    main(config_path)
+    main()

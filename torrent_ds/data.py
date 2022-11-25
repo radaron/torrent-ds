@@ -1,26 +1,30 @@
 import logging
+import os
 import datetime
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 import sqlalchemy.ext.declarative as dec
-from torrentds.error import DataBaseError
+from torrent_ds.error import DataBaseError
 
+DB_FILE_DIR = os.path.expanduser("~/.local/share/torrent_ds")
+DB_FILE_PATH = os.path.join(DB_FILE_DIR, "database.db")
 SqlAlchemyBase = dec.declarative_base()
 __factory = None
 
 
-def global_init(db_file):
+
+def global_init():
     global __factory
 
     if __factory:
         return
 
-    logger = logging.getLogger("root")
+    logger = logging.getLogger("torrent-ds")
 
-    if not db_file or not db_file.strip():
-        raise DataBaseError("You must specify a db file.")
+    if not os.path.exists(DB_FILE_DIR):
+        os.makedirs(DB_FILE_DIR)
 
-    conn_str = 'sqlite:///' + db_file.strip()
+    conn_str = 'sqlite:///' + DB_FILE_PATH
     logger.info("Connecting to DB -> {}".format(conn_str))
 
     engine = sa.create_engine(conn_str, echo=False)

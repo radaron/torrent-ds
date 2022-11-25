@@ -15,8 +15,8 @@ from ncoreparser import (
 )
 from transmissionrpc import Client as TransmissionClient
 
-from torrentds.data import create_session, Torrent
-from torrentds.creds import Credential
+from torrent_ds.data import create_session, Torrent
+from torrent_ds.creds import Credential
 
 
 download_categories = {
@@ -66,9 +66,7 @@ download_categories = {
 class DownloadManager:
     def __init__(self, config):
         self._config = config
-        self._logger = logging.getLogger("root")
-        self._credentials_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "credentials.ini")
-        self._key_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "key.key")
+        self._logger = logging.getLogger("torrent-ds")
 
     def _get_transmission_client(self):
         params = {}
@@ -79,7 +77,7 @@ class DownloadManager:
         if port:
             params["port"] = port
         if self._config["transmission"].get("authenticate") == "True":
-            cred = Credential("transmission", self._credentials_path, self._key_path)
+            cred = Credential("transmission")
             params["user"] = cred.username
             params["password"] = cred.password
 
@@ -91,7 +89,7 @@ class DownloadManager:
         return client
 
     def _get_tracker_client(self, credential_title):
-        cred = Credential(credential_title, self._credentials_path, self._key_path)
+        cred = Credential(credential_title)
         try:
             client = NcoreClient(timeout=2)
             client.login(cred.username, cred.password)
