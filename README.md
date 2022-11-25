@@ -147,7 +147,7 @@ sudo systemctl stop torrent-ds
 ```
 ### logok megtekintése
 ```
-journalctl -f | grep torrent-ds
+journalctl -fu torrent-ds
 ```
 ### Bármilyen konfiguráció módosítása után újraindítás szükséges
 ```
