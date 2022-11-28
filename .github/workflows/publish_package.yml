@@ -1,0 +1,25 @@
+name: Upload Python Package
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    - name: Poetry Install
+      uses: knowsuchagency/poetry-install@v2
+    - name: Build and publish python poetry package
+      run: |
+        poetry publish --build --skip-existing
+      env:
+        POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
